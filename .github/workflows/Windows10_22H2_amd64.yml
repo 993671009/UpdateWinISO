@@ -1,0 +1,91 @@
+# ==================== 工作流基本信息 ====================
+name: Windows10_22H2_amd64          # 工作流名称，显示在 Actions 页面标签页中
+
+on: workflow_dispatch          # 触发方式：仅支持手动点击按钮触发
+#on: [push, pull_request]
+
+# ==================== 全局环境变量 ====================
+env:
+  Build_VERSION: '19045.7414'                   # Windows 10 构建版本号，用于产物命名和 Release 标签
+  FILE_NAME: Windows10_22H2_amd64          # 输出文件名前缀，与版本号拼接后作为最终产物名
+
+# ==================== 任务定义 ====================
+jobs:
+  Windows10_22H2_amd64:           # 任务ID，与上方 jobs 下的键名保持一致
+    runs-on: windows-latest       # 运行环境：GitHub 提供的最新版 Windows Server 虚拟机
+
+    steps:
+
+    # ========== 步骤1：检出当前仓库代码 ==========
+    - name: Checkout repository
+      uses: actions/checkout@v5          # 官方 Action，将本仓库代码拉取到默认工作目录
+
+    # ========== 步骤2：克隆 ISO 补丁脚本工具仓库 ==========
+    - name: Checkout repository of Win_ISO_Patching_Scripts
+      run: |
+        cd ..  #Directory: D:\a\UpdateWinISO
+        git clone https://github.com/adavak/Win_ISO_Patching_Scripts.git
+
+    # ========== 步骤3：下载并解压 Windows 10 原始镜像分卷 ==========
+    - name: download ISO
+      shell: pwsh
+      run: |
+        #ls     #Directory: D:\a\UpdateWinISO\UpdateWinISO(即仓库目录)
+        
+        # 切换至Win_ISO_Patching_Scripts根目录 D:\a\UpdateWinISO\Win_ISO_Patching_Scripts
+        cd ..  #Directory: D:\a\UpdateWinISO
+        cd Win_ISO_Patching_Scripts
+        
+        # 下载镜像（共4个 7z 分卷文件）
+        # -L: 跟随重定向；--retry 3: 失败自动重试3次；--retry-delay 5: 每次重试间隔5秒；-o: 指定输出文件名
+        curl -L --retry 3 --retry-delay 5 -o Windows10.2025.10.x64.7z.001 https://github.com/993671009/UpdateWinISO/releases/download/Windows10/Windows10.2025.10.x64.7z.001
+        curl -L --retry 3 --retry-delay 5 -o Windows10.2025.10.x64.7z.002 https://github.com/993671009/UpdateWinISO/releases/download/Windows10/Windows10.2025.10.x64.7z.002
+        curl -L --retry 3 --retry-delay 5 -o Windows10.2025.10.x64.7z.003 https://github.com/993671009/UpdateWinISO/releases/download/Windows10/Windows10.2025.10.x64.7z.003
+        curl -L --retry 3 --retry-delay 5 -o Windows10.2025.10.x64.7z.004 https://github.com/993671009/UpdateWinISO/releases/download/Windows10/Windows10.2025.10.x64.7z.004
+        7z x Windows10.2025.10.x64.7z.001          # 解压第一个分卷，7z 会自动识别并合并后续 .002/.003/.004 分卷
+        ls         # 列出目录内容，确认解压出的 ISO 文件是否存在
+
+    # ========== 步骤4：集成 Windows 更新补丁到 ISO ==========
+    - name: Update WinISO
+      shell: cmd
+      run: |
+        :: (可选)替换预设文件W10UI.ini
+        :: copy D:\a\UpdateWinISO\UpdateWinISO\myini\W10UI.ini D:\a\UpdateWinISO\Win_ISO_Patching_Scripts\W10UI.ini /Y
+
+        :: 替换W10UI.cmd
+        copy D:\a\UpdateWinISO\UpdateWinISO\mycmd\W10UI.cmd D:\a\UpdateWinISO\Win_ISO_Patching_Scripts\W10UI.cmd /Y
+
+        :: 切换至Win_ISO_Patching_Scripts根目录 D:\a\UpdateWinISO\Win_ISO_Patching_Scripts
+        cd /d D:\a\UpdateWinISO\Win_ISO_Patching_Scripts
+
+        :: 开始集成更新
+        Start.cmd
+
+    # ========== 步骤5：删除原始母盘 ISO（释放磁盘空间）==========
+    - name: del MasterISO
+      shell: cmd
+      run: |
+        cd /d D:\a\UpdateWinISO\Win_ISO_Patching_Scripts
+        dir
+        del /F /S /Q Windows10.2025.10.x64.iso
+        dir
+
+    # ========== 步骤6：将更新后的 ISO 打包为分卷压缩包 ==========
+    - name: Package binaries
+      run: |
+        #ls     #Directory: D:\a\UpdateWinISO\UpdateWinISO(即仓库目录)
+        7z a -v1950M ${{env.FILE_NAME}}-${{env.Build_VERSION}}.7z ../Win_ISO_Patching_Scripts/*.iso -mx=9
+
+    # ========== 步骤7：上传构建产物到 Actions 内部存储 ==========
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{env.FILE_NAME}}-${{env.Build_VERSION}}
+        path: ${{env.FILE_NAME}}-${{env.Build_VERSION}}.7z*
+
+    # ========== 步骤8：创建 GitHub Release 并发布附件 ==========
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{env.FILE_NAME}}-${{env.Build_VERSION}}
+        release_name: ${{env.FILE_NAME}}-${{env.Build_VERSION}}
+        files: ${{env.FILE_NAME}}-${{env.Build_VERSION}}.7z*
