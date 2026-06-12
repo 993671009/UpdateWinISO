@@ -1,4 +1,4 @@
-# 在Github Actions上使用Win_ISO_Patching_Scripts自动集成`Windows 10`专业版更新
+# 在Github Actions上使用Win_ISO_Patching_Scripts自动集成Windows 10专业版更新
 
 ## 说明
 1. 本项目的主要目的是：使用`Win_ISO_Patching_Scripts`自动集成`Windows 10/11`更新(使用`Github Actions`自动构建)
