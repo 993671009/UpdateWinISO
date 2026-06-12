@@ -10,7 +10,7 @@
 
 ## 关于`W10UI.ini`
 - 本仓库默认使用 `myini\W10UI.ini` **预设**
-- 若要使用 `Win_ISO_Patching_Scripts`的**预设**，可在本仓库修改 `myini\W10UI.ini` ，并在相应 `yml` 文件上将 
-   `copy D:\a\UpdateWinISO\UpdateWinISO\myini\W10UI.ini D:\a\UpdateWinISO\Win_ISO_Patching_Scripts\W10UI.ini /Y`
+- 若要使用 `Win_ISO_Patching_Scripts`的**预设**，可在本仓库 `yml` 文件上将
+  `copy D:\a\UpdateWinISO\UpdateWinISO\myini\W10UI.ini D:\a\UpdateWinISO\Win_ISO_Patching_Scripts\W10UI.ini /Y`
 - 修改为
-   `:: copy D:\a\UpdateWinISO\UpdateWinISO\myini\W10UI.ini D:\a\UpdateWinISO\Win_ISO_Patching_Scripts\W10UI.ini /Y` 
+  `:: copy D:\a\UpdateWinISO\UpdateWinISO\myini\W10UI.ini D:\a\UpdateWinISO\Win_ISO_Patching_Scripts\W10UI.ini /Y` 
