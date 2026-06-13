@@ -20,6 +20,7 @@ jobs:
   Windows10_22H2_amd64:           # 任务ID，与上方 jobs 下的键名保持一致
     runs-on: windows-latest       # 运行环境：GitHub 提供的最新版 Windows Server 虚拟机
 
+# ========== 构建步骤（按顺序执行） ==========
     steps:
 
     # ========== 步骤1：检出当前仓库代码 ==========
