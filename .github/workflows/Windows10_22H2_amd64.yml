@@ -48,7 +48,7 @@ jobs:
         curl -L --retry 3 --retry-delay 5 -o Windows10.22H2.2025.10.x64.7z.002 https://github.com/993671009/Windows10.iso.7z/releases/download/Windows10/Windows10.22H2.2025.10.x64.7z.002
         curl -L --retry 3 --retry-delay 5 -o Windows10.22H2.2025.10.x64.7z.003 https://github.com/993671009/Windows10.iso.7z/releases/download/Windows10/Windows10.22H2.2025.10.x64.7z.003
         curl -L --retry 3 --retry-delay 5 -o Windows10.22H2.2025.10.x64.7z.004 https://github.com/993671009/Windows10.iso.7z/releases/download/Windows10/Windows10.22H2.2025.10.x64.7z.004
-        7z x Windows10.2025.10.x64.7z.001          # 解压第一个分卷，7z 会自动识别并合并后续 .002/.003/.004 分卷
+        7z x Windows10.22H2.2025.10.x64.7z.001          # 解压第一个分卷，7z 会自动识别并合并后续 .002/.003/.004 分卷
         ls         # 列出目录内容，确认解压出的 ISO 文件是否存在
 
     # ========== 步骤4：集成 Windows 更新补丁到 ISO ==========
