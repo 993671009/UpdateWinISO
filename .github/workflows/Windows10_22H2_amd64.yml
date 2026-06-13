@@ -1,13 +1,19 @@
 # ==================== 工作流基本信息 ====================
 name: Windows10_22H2_amd64          # 工作流名称，显示在 Actions 页面标签页中
 
-on: workflow_dispatch          # 触发方式：仅支持手动点击按钮触发
+on:
+  workflow_dispatch:          # 触发方式：仅支持手动点击按钮触发
 #on: [push, pull_request]
+
+permissions:
+  contents: write
+  actions: write
 
 # ==================== 全局环境变量 ====================
 env:
   Build_VERSION: '19045.7414'                   # Windows 10 构建版本号，用于产物命名和 Release 标签
   FILE_NAME: Windows10_22H2_amd64          # 输出文件名前缀，与版本号拼接后作为最终产物名
+  SCRIPT_DIR: ${{ github.workspace }}/../Win_ISO_Patching_Scripts
 
 # ==================== 任务定义 ====================
 jobs:
@@ -38,10 +44,10 @@ jobs:
         
         # 下载镜像（共4个 7z 分卷文件）
         # -L: 跟随重定向；--retry 3: 失败自动重试3次；--retry-delay 5: 每次重试间隔5秒；-o: 指定输出文件名
-        curl -L -o Windows10.2025.10.x64.7z.001 https://github.com/993671009/UpdateWinISO/releases/download/Windows10/Windows10.2025.10.x64.7z.001
-        curl -L -o Windows10.2025.10.x64.7z.002 https://github.com/993671009/UpdateWinISO/releases/download/Windows10/Windows10.2025.10.x64.7z.002
-        curl -L -o Windows10.2025.10.x64.7z.003 https://github.com/993671009/UpdateWinISO/releases/download/Windows10/Windows10.2025.10.x64.7z.003
-        curl -L -o Windows10.2025.10.x64.7z.004 https://github.com/993671009/UpdateWinISO/releases/download/Windows10/Windows10.2025.10.x64.7z.004
+        curl -L --retry 3 --retry-delay 5 -o Windows10.22H2.2025.10.x64.7z.001 https://github.com/993671009/Windows10.iso.7z/releases/download/Windows10/Windows10.22H2.2025.10.x64.7z.001
+        curl -L --retry 3 --retry-delay 5 -o Windows10.22H2.2025.10.x64.7z.002 https://github.com/993671009/Windows10.iso.7z/releases/download/Windows10/Windows10.22H2.2025.10.x64.7z.002
+        curl -L --retry 3 --retry-delay 5 -o Windows10.22H2.2025.10.x64.7z.003 https://github.com/993671009/Windows10.iso.7z/releases/download/Windows10/Windows10.22H2.2025.10.x64.7z.003
+        curl -L --retry 3 --retry-delay 5 -o Windows10.22H2.2025.10.x64.7z.004 https://github.com/993671009/Windows10.iso.7z/releases/download/Windows10/Windows10.22H2.2025.10.x64.7z.004
         7z x Windows10.2025.10.x64.7z.001          # 解压第一个分卷，7z 会自动识别并合并后续 .002/.003/.004 分卷
         ls         # 列出目录内容，确认解压出的 ISO 文件是否存在
 
@@ -67,7 +73,7 @@ jobs:
       run: |
         cd /d D:\a\UpdateWinISO\Win_ISO_Patching_Scripts
         dir
-        del /F /S /Q Windows10.2025.10.x64.iso
+        del /F /S /Q Windows10.22H2.2025.10.x64.iso
         dir
 
     # ========== 步骤6：将更新后的 ISO 打包为分卷压缩包 ==========
