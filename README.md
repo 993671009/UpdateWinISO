@@ -4,7 +4,7 @@
 1. 本项目的主要目的是：使用 `Win_ISO_Patching_Scripts` 自动集成 `Windows 10` 专业版更新(使用 `Github Actions` 自动构建)
 
 ## 链接
-1. `Windows 10专业版母盘`地址: https://github.com/993671009/UpdateWinISO/releases/tag/Windows10
+1. `Windows 10专业版母盘`地址: https://github.com/993671009/Windows10.iso.7z/releases/tag/Windows10
 2. `Win_ISO_Patching_Scripts`地址: https://github.com/adavak/Win_ISO_Patching_Scripts
 3. `W10UI`地址: https://github.com/abbodi1406/BatUtil
 
